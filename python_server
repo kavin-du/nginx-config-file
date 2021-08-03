@@ -1,0 +1,33 @@
+server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        server_name _;
+
+        return 301 https://$host$request_uri;
+}
+
+server {
+        root /var/www;
+
+        listen 443 ssl;
+        ssl_certificate /etc/letsencrypt/live/lt-2021-039.ml/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/lt-2021-039.ml/privkey.pem;
+
+        server_name www.lt-2021-039.ml lt-2021-039.ml;
+
+        location / {
+                proxy_pass http://127.0.0.1:8081;
+        }
+
+        location /web0039 {
+                index id.txt;
+        }
+
+        location /secret {
+                auth_basic "This is a protected area";
+                auth_basic_user_file /var/www/secret/.htpasswd;
+
+                index secret.html;
+        }
+}
